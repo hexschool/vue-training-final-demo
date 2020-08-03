@@ -69,12 +69,10 @@ export default {
       const api = `${process.env.VUE_APP_APIPATH}/api/auth/login`;
 
       this.$http.post(api, this.user).then((response) => {
-        const token = response.data.token;
-        const expired = response.data.expired;
+        const { token } = response.data;
+        const { expired } = response.data;
 
-        this.$cookies.set('token', token, new Date(expired * 1000));
-
-        this.setAxiosAuthorization();
+        document.cookie = `hexToken=${token};expires=${new Date(expired * 1000)};`;
 
         this.$bus.$emit('message:push',
           '登入成功',

@@ -7,7 +7,10 @@
           role="main"
           class="col-md-12 ml-sm-auto px-4"
         >
-          <router-view />
+          <router-view
+            v-if="checkSuccess"
+            :token="token"
+          />
         </main>
       </div>
     </div>
@@ -24,17 +27,21 @@ export default {
   },
   data() {
     return {
+      token: '',
       uuid: process.env.VUE_APP_UID,
+      checkSuccess: false,
+
     };
   },
   created() {
-    const token = this.$cookies.get('token');
+    this.token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1');
 
     const url = `${process.env.VUE_APP_APIPATH}/api/auth/check`;
 
-    this.setAxiosAuthorization();
+    // Axios 預設值
+    this.$http.defaults.headers.common.Authorization = `Bearer ${this.token}`;
 
-    this.$http.post(url, { api_token: token }).then((response) => {
+    this.$http.post(url, { api_token: this.token }).then((response) => {
       if (!response.data.success) {
         this.$router.push({
           path: 'login',
@@ -45,6 +52,7 @@ export default {
             ${response.data.message}`,
           'danger');
       }
+      this.checkSuccess = true;
     });
   },
 };

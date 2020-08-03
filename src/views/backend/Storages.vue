@@ -137,8 +137,6 @@ export default {
 
       const url = `${process.env.VUE_APP_APIPATH}/api/${this.uuid}/admin/storage/${this.tempData.id}`;
 
-      this.setAxiosAuthorization();
-
       this.$http.delete(url).then(() => {
         $('#deleteModal').modal('hide');
 

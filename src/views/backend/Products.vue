@@ -403,8 +403,6 @@ export default {
         api = `${process.env.VUE_APP_APIPATH}/api/${this.uuid}/admin/ec/product/${this.tempProduct.id}`;
 
         httpMethod = 'patch';
-
-        this.setAxiosAuthorization();
       }
 
       this.$http[httpMethod](api, this.tempProduct).then(() => {
@@ -435,8 +433,6 @@ export default {
       this.isLoading = true;
 
       const url = `${process.env.VUE_APP_APIPATH}/api/${this.uuid}/admin/ec/product/${this.tempProduct.id}`;
-
-      this.setAxiosAuthorization();
 
       this.$http.delete(url).then(() => {
         $('#delProductModal').modal('hide');

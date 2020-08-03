@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import axios from 'axios';
 import VueAxios from 'vue-axios';
-import VueCookies from 'vue-cookies';
 import jquery from 'jquery';
 import {
   ValidationObserver,
@@ -25,7 +24,6 @@ import currencyFilter from './filters/currency';
 window.$ = jquery;
 
 Vue.use(VueAxios, axios);
-Vue.use(VueCookies);
 Vue.config.productionTip = false;
 
 Vue.filter('currency', currencyFilter);
@@ -48,35 +46,7 @@ localize('tw', zhTW);
 Vue.component('ValidationObserver', ValidationObserver);
 Vue.component('ValidationProvider', ValidationProvider);
 
-Vue.mixin({
-  methods: {
-    setAxiosAuthorization() {
-      const token = this.$cookies.get('token');
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-    },
-  },
-});
-
 new Vue({
   router,
   render: (h) => h(App),
 }).$mount('#app');
-
-router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth) {
-    const url = `${process.env.VUE_APP_APIPATH}/api/auth/check`;
-    const token = Vue.$cookies.get('token');
-
-    axios.post(url, { api_token: token }).then((response) => {
-      if (response.data.success) {
-        next();
-      }
-    }).catch(() => {
-      next({
-        path: '/login',
-      });
-    });
-  } else {
-    next();
-  }
-});
