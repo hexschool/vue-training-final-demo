@@ -474,6 +474,9 @@ export default {
       status: {
         loadingItem: '',
       },
+      // coupon 不建議預先定義，如果預先定義的話通常是空值
+      // 如果傳送一個空值的 coupon 就會出現 500 錯誤
+      // 因此會建議打完 coupon API 確定該 coupon 是存在並啟用的狀態在加入到訂單內
       form: {
         name: '',
         email: '',
@@ -618,12 +621,16 @@ export default {
         this.getCart();
       });
     },
+    // 新增 coupon (實際是搜尋 coupon)
     addCoupon() {
       this.isLoading = true;
 
       const url = `${process.env.VUE_APP_APIPATH}/api/${this.uuid}/ec/coupon/search`;
-
+      // 輸入 coupon 之前必須先戳一下 api/{{ uuid }}/coupon/search API 確定該 coupon 是存在的
       this.$http.post(url, { code: this.coupon_code }).then((response) => {
+        // 若 coupon 存在就回寫回去到 this.coupon
+        // 該資料會是一個物件格式，詳情可見 API 文件
+        // https://course-ec-api.hexschool.io/document#frontend-search-coupon-code-code
         this.coupon = response.data.data;
 
         this.isLoading = false;
@@ -658,7 +665,9 @@ export default {
 
       const order = Object.assign({}, this.form);
 
-      // 如果有優惠卷就加入
+      // 如果有優惠卷就加入，請注意該 coupon 必須先執行過 this.addCoupon()
+      // 主要會使用 enabled 屬性判斷該 coupon 是否可以使用
+      // 如果沒有執行 this.addCoupon() 那麼 enabled 就會是 undefined，因此還是不會執行
       if (this.coupon.enabled) {
         order.coupon = this.coupon.code;
       }
