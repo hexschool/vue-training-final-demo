@@ -130,7 +130,7 @@ export default {
     openModel(item) {
       $('#deleteModal').modal('show');
 
-      this.tempData = Object.assign({}, item);
+      this.tempData = { ...item };
     },
     deleteData() {
       this.isLoading = true;

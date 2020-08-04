@@ -263,17 +263,16 @@ export default {
           break;
         // 由於 const 與 let 宣告環境較特別，故需要在 case 外層宣告一個 {} 確保作用域
         case 'edit': {
-          this.tempCoupon = Object.assign({}, item);
+          this.tempCoupon = { ...item };
 
           // 使用 split 切割相關時間戳
           const dedlineAt = this.tempCoupon.deadline.datetime.split(' ');
-          this.due_date = dedlineAt[0]; // 日期
-          this.due_time = dedlineAt[1]; // 時間
+          [this.due_date, this.due_time] = dedlineAt; // 日期
           $('#couponModal').modal('show');
           break;
         }
         case 'delete':
-          this.tempCoupon = Object.assign({}, item);
+          this.tempCoupon = { ...item };
           $('#delCouponModal').modal('show');
           break;
         default:

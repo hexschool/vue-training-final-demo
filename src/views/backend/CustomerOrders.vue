@@ -647,7 +647,7 @@ export default {
 
           this.isLoading = false;
         } else {
-          const message = error.response.data.message;
+          const { message } = error.response.data;
 
           this.$bus.$emit('message:push',
             `加入失敗惹，好糗Σ( ° △ °|||)︴
@@ -663,7 +663,7 @@ export default {
 
       const url = `${process.env.VUE_APP_APIPATH}/api/${this.uuid}/ec/orders`;
 
-      const order = Object.assign({}, this.form);
+      const order = { ...this.form };
 
       // 如果有優惠卷就加入，請注意該 coupon 必須先執行過 this.addCoupon()
       // 主要會使用 enabled 屬性判斷該 coupon 是否可以使用

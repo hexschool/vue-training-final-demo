@@ -383,7 +383,7 @@ export default {
           this.getDetails(item.id);
           break;
         case 'delete':
-          this.tempProduct = Object.assign({}, item);
+          this.tempProduct = { ...item };
 
           $('#delProductModal').modal('show');
           break;
