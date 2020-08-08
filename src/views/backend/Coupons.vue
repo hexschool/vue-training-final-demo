@@ -309,22 +309,17 @@ export default {
       // 日期格式 Y-m-d H:i:s，例如：「2020-06-16 09:31:18」
       this.tempCoupon.deadline_at = `${this.due_date} ${this.due_time}`;
 
-      this.$http[httpMethod](api, this.tempCoupon).then((response) => {
+      this.$http[httpMethod](api, this.tempCoupon).then(() => {
         $('#couponModal').modal('hide');
+        this.$bus.$emit('message:push',
+          status,
+          'success');
 
-        if (response.status === 200) {
-          this.$bus.$emit('message:push',
-            status,
-            'success');
-
-          this.getCoupons();
-        } else {
-          this.$bus.$emit('message:push',
-            `出現錯誤惹，好糗Σ( ° △ °|||)︴
-            ${response.data.message}`,
-            'danger');
-        }
-
+        this.getCoupons();
+      }).catch(() => {
+        this.$bus.$emit('message:push',
+          '出現錯誤惹，好糗Σ( ° △ °|||)︴',
+          'danger');
         this.isLoading = false;
       });
     },
@@ -333,22 +328,19 @@ export default {
 
       const api = `${process.env.VUE_APP_APIPATH}/api/${this.uuid}/admin/ec/coupon/${this.tempCoupon.id}`;
 
-      this.$http.delete(api).then((response) => {
+      this.$http.delete(api).then(() => {
         $('#delCouponModal').modal('hide');
+        this.$bus.$emit('message:push',
+          '刪除成功囉，好棒ヽ(＾Д＾)ﾉ ',
+          'success');
 
-        if (response.status === 200) {
-          this.$bus.$emit('message:push',
-            '刪除成功囉，好棒ヽ(＾Д＾)ﾉ ',
-            'success');
+        this.getCoupons();
 
-          this.getCoupons();
-        } else {
-          this.$bus.$emit('message:push',
-            `出現錯誤惹，好糗Σ( ° △ °|||)︴
-            ${response.data.message}`,
-            'danger');
-        }
-
+        this.isLoading = false;
+      }).catch(() => {
+        this.$bus.$emit('message:push',
+          '出現錯誤惹，好糗Σ( ° △ °|||)︴',
+          'danger');
         this.isLoading = false;
       });
     },

@@ -1,39 +1,119 @@
-# 發生錯誤時執行終止指令
+
 set -e
 
-# 取得目前專案的遠端分支
-originUrl=$(git config --get remote.origin.url)
+# https://en.wikipedia.org/wiki/ANSI_escape_code
+lgreen='\033[1;32m'
+yellow='\033[1;33m'
+norm='\033[0m'
+bold='\033[1m'
 
-# 注意若是出現以下 Url 就是走 SSH
-# git@github.com:hsiangfeng/HexfootMusic.git
-# 反之，若是 HTTPs 的話則是以下
-# https://github.com/hsiangfeng/HexfootMusic.git
-# 通常來講走 SSH 可能會出現 GitHub Public Keys 錯誤，這部分 Google 一下就可以解決囉。
+unameOut="$(uname -s)"
+case "${unameOut}" in
+  Linux*)     machine=Linux;;
+  Darwin*)    machine=Mac;;
+  CYGWIN*)    machine=Cygwin;;
+  MINGW*)     machine=MinGw;;
+  *)          machine="UNKNOWN:${unameOut}"
+esac
 
-nowStatus=${originUrl:0:5}
-echo $nowStatus
-if [ $nowStatus = 'https' ]
+if [ ${machine} = "Mac" ]
 then
-  echo '傳輸方式採用 HTTPs 模式'
-  echo '目前遠端分支 URL：'$originUrl
+  osStatus=""
+elif [ ${machine} = "MinGw" ]
+then
+  osStatus="-e"
 else
-  echo '傳輸方式採用 SSH 模式'
-  echo '目前遠端分支 URL：'$originUrl
+  osStatus=""
 fi
 
-# 打包編譯
+echo
+echo ${osStatus} "${lgreen}=============================================================="
+echo ${osStatus} " 您的執行環境是 ${machine} "
+echo ${osStatus} "==============================================================${norm}"
+
+echo
+echo ${osStatus} "${lgreen}=============================================================="
+echo ${osStatus} " 一鍵部署 5 秒後開始運作 "
+echo ${osStatus} " ＊如要停止動作請按下 CRTL + C or Control + C"
+echo ${osStatus} "==============================================================${norm}"
+
+sleep 5s
+
+echo
+echo ${osStatus} "${yellow}=============================================================="
+echo ${osStatus} " 準備取得 Git 遠端 Url..."
+echo ${osStatus} "==============================================================${norm}"
+
+sleep 1s
+originUrl=$(git config --get remote.origin.url)
+
+echo
+echo ${osStatus} "${lgreen}=============================================================="
+echo ${osStatus} " 目前遠端分支: ${originUrl} "
+echo ${osStatus} "==============================================================${norm}"
+
+sleep 1s
+split=${originUrl:0:5}
+status='';
+if [ $split = 'https' ]
+then
+  status='HTTPS'
+else
+  status='SSH'
+fi
+
+echo
+echo ${osStatus} "${lgreen}=============================================================="
+echo ${osStatus} " 傳輸方式將採用 $status "
+echo ${osStatus} " 目前遠端分支 URL：$originUrl "
+echo ${osStatus} "==============================================================${norm}"
+
+sleep 5s
+
+echo
+echo ${osStatus} "${yellow}=============================================================="
+echo ${osStatus} " 5 秒後開始編譯 Vue Cli "
+echo ${osStatus} " ＊如要停止動作請按下 CRTL + C or Control + C"
+echo ${osStatus} "==============================================================${norm}"
+
+sleep 5s
 npm run build
 
-echo '移動目錄到編譯出來的 dist 資料夾'
-#移動到打包資料夾下，若你有調整的話打包後的資料夾請務必調整
+echo
+echo ${osStatus} "${lgreen}=============================================================="
+echo ${osStatus} " 編譯完成 "
+echo ${osStatus} "==============================================================${norm}"
+
+echo
+echo ${osStatus} "${yellow}=============================================================="
+echo ${osStatus} " 移動到編譯完成的資料夾 "
+echo ${osStatus} "==============================================================${norm}"
+
 cd dist
-# 初始化並設置 Git
+
+echo
+echo ${osStatus} "${yellow}=============================================================="
+echo ${osStatus} " 初始化 Git 與加入 Commit "
+echo ${osStatus} "==============================================================${norm}"
+
 git init
 git add .
 git commit -m "update `date +'%Y-%m-%d %H:%M:%S'`";
 
-# 上傳到到 gh-pages
-# 如果是走 SSH 的話可能會比較不好調整
+echo
+echo ${osStatus} "${yellow}=============================================================="
+echo ${osStatus} " 5 秒後部署檔案到遠端分支 "
+echo ${osStatus} " ＊如要停止動作請按下 CRTL + C or Control + C"
+echo ${osStatus} "==============================================================${norm}"
+sleep 5s
 git push -f $originUrl master:gh-pages
 
-cd -
+echo
+echo ${osStatus} "${yellow}=============================================================="
+echo ${osStatus} " 部署完成 "
+echo ${osStatus} "==============================================================${norm}"
+
+echo
+echo ${osStatus} "${lgreen}=============================================================="
+echo ${osStatus} " 一鍵部署指令結束 "
+echo ${osStatus} "==============================================================${norm}"
