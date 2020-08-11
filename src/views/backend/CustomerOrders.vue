@@ -12,7 +12,7 @@
         <div class="card border-0 shadow-sm">
           <div
             style="height: 150px; background-size: cover; background-position: center"
-            :style="{backgroundImage: `url(${item.imageUrl})`}"
+            :style="{backgroundImage: `url(${item.imageUrl[0]})`}"
           />
           <div class="card-body">
             <span class="badge badge-secondary float-right ml-2">{{ item.category }}</span>
@@ -113,7 +113,7 @@
           </div>
           <div class="modal-body">
             <img
-              :src="tempProduct.image"
+              :src="tempProduct.imageUrl[0]"
               class="img-fluid"
               alt
             >
@@ -470,6 +470,7 @@ export default {
       products: [],
       tempProduct: {
         num: 0,
+        imageUrl: [],
       },
       status: {
         loadingItem: '',
